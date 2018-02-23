@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1518704991 source:/home/sushil/sagar/cpp/FlowCharting/main.cpp
+	"sfml.h"
+
+1518702476 source:/home/sushil/sagar/cpp/FlowCharting/sfml.cpp
+
+1518705475 /home/sushil/sagar/cpp/FlowCharting/sfml.h
+	<SFML/Graphics.hpp>
+	"sfml.cpp"
+
+1518706053 /home/sushil/sagar/cpp/FlowCharting/sfml.cpp
+	<SFML/Graphics.hpp>
+
