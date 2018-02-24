@@ -1,3 +1,4 @@
+
 #include"sfml.h"
 
 int main()
@@ -10,9 +11,10 @@ int main()
     while (window.isOpen())
     {
         sfml.eventCheck();//handle user input
+
         sfml.change(255,255,255); //blut
+        sfml.fontUpdate();
 
     }
-
     return 0;
 }
