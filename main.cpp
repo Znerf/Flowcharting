@@ -1,17 +1,24 @@
 #include<string.h>
 #include"sfml.h"
-void textAdder(FontHandler* a){
-    int i=0;
-    strcpy(a[i].text,"File");
-    a[i].x=50;
-    a[i].y=50;
-    i++;
-    strcpy(a[i].text,"File");
-    a[i].x=20;
-    a[i].y=20;
+#include"menu.h"
+
+void textAdder(Sfml* sfml,char str[20],int x, int y,int siz){
+
+    static FontHandler a[1000];
+
+    static int i=0;
+
+    strcpy(a[i].text,str);
+    a[i].x=x;
+    a[i].y=y;
     i++;
     a[i].x=-1;
+
+    sfml->fontUpdate(a,siz);
+
+
 }
+
 
 int main()
 {
@@ -19,16 +26,16 @@ int main()
     sf::VideoMode::getDesktopMode().height-150),"FlowCharting",sf::Style::Default);
 
     Sfml sfml(&window);
-
-    FontHandler a[1000];
+    MenuHandler menu(&sfml);
 
     while (window.isOpen())
     {
         sfml.eventCheck();//handle user input
 
         sfml.change(255,255,255); //blut
-        textAdder(a);
-        sfml.fontUpdate(a);
+
+        menu.titleMenu();//textAdder(&sfml,"hi",4,5);
+
 
     }
     return 0;

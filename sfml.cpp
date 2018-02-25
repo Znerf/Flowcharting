@@ -1,5 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include<string.h>
+
 
 class FontHandler{
 public:
@@ -26,10 +28,10 @@ class Sfml{
             (*window).clear(sf::Color(i, j, k));
         }
 
-        void fontUpdate(FontHandler a[1000]){
+        void fontUpdate(FontHandler* a,int siz){
 
             sf::Font font;
-            if (!font.loadFromFile("font/a.otf"))
+            if (!font.loadFromFile("font/a.ttf"))
             {
                 std::cout<<"Can't load file"<<std::endl;
 
@@ -46,14 +48,14 @@ class Sfml{
                 // set the string to display
                 text.setString(a[i].text);
                 // set the character size
-                text.setCharacterSize(20); // in pixels, not points!
+                text.setCharacterSize(siz); // in pixels, not points!
 
                 // set the color
                 text.setColor(sf::Color::Black);
 
                 int SCRWIDTH=(a[i].x)*(sf::VideoMode::getDesktopMode().width-500)/100;
                 int SCRHEIGHT=(a[i].y)*(sf::VideoMode::getDesktopMode().height-150)/100;
-                std::cout<<a[1].x<<" ";
+
                 // inside the main loop, between window.clear() and window.display()
 
                 text.setPosition(sf::Vector2f(SCRWIDTH,SCRHEIGHT));
