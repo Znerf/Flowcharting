@@ -1,6 +1,15 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-class FontHandler;
+
+class FontHandler{
+public:
+        char text[12]="";
+        int x;
+        int y;
+
+};
+
+
 class Sfml{
     sf::RenderWindow * window;
 
@@ -17,36 +26,44 @@ class Sfml{
             (*window).clear(sf::Color(i, j, k));
         }
 
-        void fontUpdate(){
+        void fontUpdate(FontHandler a[1000]){
+
             sf::Font font;
-            if (!font.loadFromFile("a.ttf"))
+            if (!font.loadFromFile("font/a.otf"))
             {
                 std::cout<<"Can't load file"<<std::endl;
 
             }
+
+            int i=0;
             sf::Text text;
 
-            // select the font
+                // select the font
             text.setFont(font); // font is a sf::Font
 
-            // set the string to display
-            text.setString("Hello world");
-            // set the character size
-            text.setCharacterSize(24); // in pixels, not points!
+            while((a[i].x)!=-1){
 
-            // set the color
-            text.setColor(sf::Color::Red);
-            // set the text style
-            text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-            //
-            //...
-            float SCRWIDTH=sf::VideoMode::getDesktopMode().width-500;
-            float SCRHEIGHT=sf::VideoMode::getDesktopMode().height-150;
-            // inside the main loop, between window.clear() and window.display()
-            text.setPosition(sf::Vector2f(SCRWIDTH/2.0f,SCRHEIGHT/2.0f));
+                // set the string to display
+                text.setString(a[i].text);
+                // set the character size
+                text.setCharacterSize(20); // in pixels, not points!
 
-            (*window).draw(text);
+                // set the color
+                text.setColor(sf::Color::Black);
+
+                int SCRWIDTH=(a[i].x)*(sf::VideoMode::getDesktopMode().width-500)/100;
+                int SCRHEIGHT=(a[i].y)*(sf::VideoMode::getDesktopMode().height-150)/100;
+                std::cout<<a[1].x<<" ";
+                // inside the main loop, between window.clear() and window.display()
+
+                text.setPosition(sf::Vector2f(SCRWIDTH,SCRHEIGHT));
+
+                (*window).draw(text);
+
+                i++;
+            }
             (*window).display();
+
         }
 
         void eventCheck(){

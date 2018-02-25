@@ -1,5 +1,17 @@
-
+#include<string.h>
 #include"sfml.h"
+void textAdder(FontHandler* a){
+    int i=0;
+    strcpy(a[i].text,"File");
+    a[i].x=50;
+    a[i].y=50;
+    i++;
+    strcpy(a[i].text,"File");
+    a[i].x=20;
+    a[i].y=20;
+    i++;
+    a[i].x=-1;
+}
 
 int main()
 {
@@ -8,13 +20,19 @@ int main()
 
     Sfml sfml(&window);
 
+    FontHandler a[1000];
+
     while (window.isOpen())
     {
         sfml.eventCheck();//handle user input
 
         sfml.change(255,255,255); //blut
-        sfml.fontUpdate();
+        textAdder(a);
+        sfml.fontUpdate(a);
 
     }
     return 0;
 }
+
+
+
