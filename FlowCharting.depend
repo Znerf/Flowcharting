@@ -16,9 +16,11 @@
 	<SFML/Graphics.hpp>
 	<sstream>
 
-1520257688 source:/home/sushil/sagar/cpp/Flowcharting/main.cpp
-	"sfml.h"
-	"menu.h"
+1520345789 source:/home/sushil/sagar/cpp/Flowcharting/main.cpp
+	<iostream>
+	<cmath>
+	<sstream>
+	<SFML/Graphics.hpp>
 
 1520238802 /home/sushil/sagar/cpp/Flowcharting/sfml.h
 	<SFML/Graphics.hpp>

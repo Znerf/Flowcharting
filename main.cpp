@@ -341,7 +341,7 @@ public:
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(800, 600,32), "SFML works!");
 
 
 
@@ -363,6 +363,8 @@ int main()
     int a=0;
     bool isAny=false;
     Decision shape3;
+
+
     while (window.isOpen())
     {
         //window.clear(sf::Color::White);
@@ -402,18 +404,91 @@ int main()
             shape3.setPosition(sf::Vector2f(Mx,My));
 
             a=1;
+            string st;
+            sf::String text;
 
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
+
+
+                sf::VideoMode VBMode(300, 300, 32);
+
+                sf::RenderWindow inputField(VBMode, "Input");
+
+
+                 while (inputField.isOpen())
+                {
+                    //window.clear(sf::Color::White);
+                    sf::Event event2;
+                    while (inputField.pollEvent(event2))
+                    {
+                        if (event2.type == sf::Event::Closed)
+                            inputField.close();
+                                           // In event loop...
+
+                        if (event2.type == sf::Event::TextEntered)
+                        {
+                            // Handle ASCII characters only
+
+
+
+                            if (event2.text.unicode < 128)
+                            {
+                                if(event2.text.unicode==8) st=st.substr(0,st.size()-1);
+                                else if (event2.text.unicode==13) {
+                                    shape3.setString(st);
+                                    inputField.close();
+                                }
+                                else if (event2.text.unicode >= 32 &&event2.text.unicode <= 126 ) st += (event2.text.unicode);
+                            }
+                        }
+
+
+
+                    }
+                  //  inputField.clear();
+
+                    inputField.clear(sf::Color::White);
+                    sf::Font font;
+                    if (!font.loadFromFile("arial.ttf"))
+                    {
+
+                        cout<<"error in loading font";
+                        exit(0);
+                    }
+                    sf::Text outText;
+
+
+                    // select the font
+                    outText.setFont(font); // font is a sf::Font
+
+
+                    // set the string to display
+                    outText.setString(st);
+
+                    // set the character size
+                    outText.setCharacterSize(15); // in pixels, not points!
+
+                    // set the color
+                    outText.setColor(sf::Color::Black);
+
+
+
+
+                    inputField.draw(outText);
+                    inputField.display();
+                }
+                cout<<st;
                 isAny=false;
-
-
             }
 
         }
 
+
         window.display();
     }
 
+    int pause;
+    cin>>pause;
     return 0;
 }
