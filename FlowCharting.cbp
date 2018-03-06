@@ -37,6 +37,8 @@
 		<Unit filename="menu.h" />
 		<Unit filename="sfml.cpp" />
 		<Unit filename="sfml.h" />
+		<Unit filename="shape.cpp" />
+		<Unit filename="shape.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
