@@ -16,6 +16,39 @@ struct Point
 };
 
 
+class CheckPoint{
+public:
+    int x_product(sf::Vector2f a, sf::Vector2f b)
+    {
+        return ((a.x)*(b.y)-(a.y)*(b.x));
+    }
+
+    int get_side(sf::Vector2f a, sf::Vector2f b)
+    {
+        int x = x_product(a, b);
+
+        if (x < 0)
+            return 1;  //left
+        else if (x > 0)
+            return 0; //right
+        else
+            return -1;  //none
+    }
+
+
+    sf::Vector2f v_sub(sf::Vector2f a, sf::Vector2f b)
+    {
+        sf::Vector2f temp;
+        temp.x = a.x-b.x;
+        temp.y = a.y-b.y;
+        return temp;
+    }
+
+    virtual bool checkPoint(sf::Vector2f , int ) =0;//n_vertices == number of vertices
+
+
+
+};
 
 class EllipseShape : public sf::Shape
 {
@@ -60,8 +93,7 @@ private :
     sf::Vector2f m_radius;
 };
 
-
-class Process : public sf::Drawable
+class Process : public sf::Drawable,public CheckPoint
 {
 private:
     sf::Vector2f Padding = sf::Vector2f(20,10);
@@ -141,7 +173,6 @@ public:
 
 //
 
-
     }
 
     void setPosition(const sf::Vector2f &pos)
@@ -166,6 +197,7 @@ public:
         r.setOutlineColor(text_outline_color);
         text.setColor(text_outline_color);
     }
+
     void getCornerCoordinates(sf::Vector2f *vertices)
     {
         Position = r.getPosition();
@@ -183,6 +215,38 @@ public:
         vertices[3].x = (Position.x - (Bounds.width)/2);
         vertices[3].y = (Position.y - (Bounds.height)/2);
     }
+
+
+    bool checkPoint(sf::Vector2f point,  int n_vertices=4) //n_vertices == number of vertices
+    {
+        sf::Vector2f vertices[4];
+        getCornerCoordinates(vertices);
+        //returns true if point lies inside the convexshape or false if outside the shape
+
+        int previous_side = -1;
+        for(int n = 0; n < n_vertices; n++)
+        {
+            sf::Vector2f a, b;
+            a = vertices[n];
+            b = vertices[(n+1)%n_vertices];
+
+            sf::Vector2f affine_segment = v_sub(b, a);
+            sf::Vector2f affine_point = v_sub(point, a);
+            int current_side = get_side(affine_segment, affine_point);
+             if (current_side ==  -1)
+                 return false; //outside or over an edge
+
+            else if (previous_side == -1) //first segment
+                previous_side = current_side;
+
+            else if (previous_side != current_side)
+                return false;
+        }
+
+        return true;
+
+    }
+
 };
 
 
@@ -278,11 +342,24 @@ public:
         text.setColor(text_outline_color);
     }
 
+    bool checkPoint(sf::Vector2f point)
+    {
+        //returns if the point is inside or outside, on the edge is concidered as outside
+        sf::Vector2f center = e.getPosition();
+        sf::Vector2f radius = e.getRadius();
+        float v;
+
+        v = pow(point.x - center.x ,2)/(pow(radius.x , 2)) +  pow(point.y - center.y ,2)/(pow(radius.y , 2));
+        if(v < 1)
+            return true;
+        else
+            return false;
+    }
 
 };
 
 
-class Decision : public sf::Drawable
+class Decision : public sf::Drawable,public CheckPoint
 {
 private:
     sf::Vector2f Padding = sf::Vector2f(30,30);
@@ -390,9 +467,37 @@ public:
         vertices[3].x = Position.x - radius;
         vertices[3].y = Position.y;
     }
+    bool checkPoint(sf::Vector2f point, int n_vertices=4) //n_vertices == number of vertices
+    {
+        //returns true if point lies inside the convexshape or false if outside the shape
+        sf::Vector2f vertices[4];
+        getCornerCoordinates(vertices);
+        int previous_side = -1;
+        for(int n = 0; n < n_vertices; n++)
+        {
+            sf::Vector2f a, b;
+            a = vertices[n];
+            b = vertices[(n+1)%n_vertices];
+
+            sf::Vector2f affine_segment = v_sub(b, a);
+            sf::Vector2f affine_point = v_sub(point, a);
+            int current_side = get_side(affine_segment, affine_point);
+             if (current_side ==  -1)
+                 return false; //outside or over an edge
+
+            else if (previous_side == -1) //first segment
+                previous_side = current_side;
+
+            else if (previous_side != current_side)
+                return false;
+        }
+
+        return true;
+
+    }
 };
 
-class InputOutput : public sf::Drawable
+class InputOutput : public sf::Drawable,public CheckPoint
 {
 private:
     sf::Vector2f Padding = sf::Vector2f(20,10);
@@ -504,6 +609,37 @@ public:
             vertices[i] = shape.getPoint(i);
         }
     }
+
+    bool checkPoint(sf::Vector2f point, int n_vertices=4) //n_vertices == number of vertices
+    {
+        //returns true if point lies inside the convexshape or false if outside the shape
+        sf::Vector2f vertices[4];
+
+        getCornerCoordinates(vertices);
+
+        int previous_side = -1;
+        for(int n = 0; n < n_vertices; n++)
+        {
+            sf::Vector2f a, b;
+            a = vertices[n];
+            b = vertices[(n+1)%n_vertices];
+
+            sf::Vector2f affine_segment = v_sub(b, a);
+            sf::Vector2f affine_point = v_sub(point, a);
+            int current_side = get_side(affine_segment, affine_point);
+             if (current_side ==  -1)
+                 return false; //outside or over an edge
+
+            else if (previous_side == -1) //first segment
+                previous_side = current_side;
+
+            else if (previous_side != current_side)
+                return false;
+        }
+
+        return true;
+
+    }
 };
 
 class TextWindow{
@@ -596,6 +732,8 @@ class Run{
     Decision temDecision;
     InputOutput temInputOutput;
 
+    Process debugger;
+
     sf::RenderWindow* window;
     sf::RenderWindow win;
     string st;
@@ -608,6 +746,8 @@ public:
     Run(sf::RenderWindow* windo){
         window= windo;
 
+        debugger.setPosition(sf::Vector2f(50,200));
+        debugger.setString("Place shape in screen");
     }
     void eventHandle(){
         sf::Event event;
@@ -624,6 +764,45 @@ public:
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::T)) isTerminator=true;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) isProcess=true;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) isInputOutput=true;
+
+        pointChecker();
+    }
+
+    void pointChecker(){
+        float px=cursorX();
+        float py=cursorY();
+        sf::Vector2f coord = sf::Vector2f(px,py);
+        for(int count=0;count<process.size();count++){
+           if(process[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                  debugger.setString("process "+stringy);
+
+            }
+
+        }
+
+        for(int count=0;count<decision.size();count++){
+           if(decision[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                debugger.setString("Decision "+stringy);
+
+            }
+        }
+        for(int count=0;count<terminator.size();count++){
+            if(terminator[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                debugger.setString("term "+stringy);
+
+            }
+        }
+
+        for(int count=0;count<inputOutput.size();count++){
+            if(inputOutput[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                debugger.setString("input "+stringy);
+
+            }
+        }
 
     }
 
@@ -719,6 +898,7 @@ public:
         }
 
       //  cout<<(int)process.size();
+        window->draw(debugger);
         drawAll();
 
     }
@@ -792,8 +972,6 @@ int main()
 
     while (window.isOpen())
     {
-
-
 
         controlObject.logic();
 
