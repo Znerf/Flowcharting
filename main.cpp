@@ -684,6 +684,8 @@ public:
     }
 
     void logic(){
+        eventHandle();
+        clear();
         if(isDecision==true|| isTerminator==true || isProcess==true|| isInputOutput==true){
 
 
@@ -791,9 +793,7 @@ int main()
     while (window.isOpen())
     {
 
-        controlObject.eventHandle();
 
-        controlObject.clear();
 
         controlObject.logic();
 
