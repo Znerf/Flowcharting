@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include<sstream>
+
 #include <SFML/Graphics.hpp>
 #include<vector>
 
@@ -8,12 +8,6 @@
 
 using namespace std;
 
-struct Point
-{
-
-    int x;
-    int y;
-};
 
 
 class CheckPoint{
@@ -21,7 +15,13 @@ public:
     int x_product(sf::Vector2f a, sf::Vector2f b)
     {
         return ((a.x)*(b.y)-(a.y)*(b.x));
-    }
+    }//struct Point
+//{
+//
+//    int x;
+//    int y;
+//};
+
 
     int get_side(sf::Vector2f a, sf::Vector2f b)
     {
@@ -503,6 +503,7 @@ private:
     sf::Vector2f Padding = sf::Vector2f(20,10);
     sf::Vector2f Position = sf::Vector2f(0,0); //initial
     int deltax = 30;
+    sf::Vector2f rsize;
     sf::Vector2f Scale = sf::Vector2f(1,1);
     sf::Color text_outline_color = sf::Color::Black;
     sf::String str  = "Text_Here";
@@ -520,7 +521,7 @@ private:
         text.setOrigin(text.getGlobalBounds().width/2, text.getGlobalBounds().height/2+5*Scale.y);
     }
 
-    void setSize(const sf::Vector2f &rsize)
+    void setSize()
     {
             shape.setPoint(0, sf::Vector2f(deltax,0));
             shape.setPoint(1, sf::Vector2f(2*deltax+rsize.x,0));
@@ -538,7 +539,7 @@ public:
         shape.setPointCount(4); //4 is fixed here
 
         {
-            setSize(sf::Vector2f (150, 50));
+            setSize();
         }
 
         shape.setOutlineColor(text_outline_color);
@@ -573,9 +574,12 @@ public:
         str = s;
         text.setString(str);
 
-        sf::Vector2f rsize (2*Padding.x + text.getGlobalBounds().width , 2*Padding.y + text.getGlobalBounds().height);
+        //sf::Vector2f rsize (2*Padding.x + text.getGlobalBounds().width , 2*Padding.y + text.getGlobalBounds().height);
+        rsize.x = 2*Padding.x + text.getGlobalBounds().width;
+        rsize.y = 2*Padding.y + text.getGlobalBounds().height;
+
         setOrigin();
-        setSize(rsize);
+        setSize();
         setOrigin();
     }
 
@@ -604,10 +608,17 @@ public:
 
     void getCornerCoordinates(sf::Vector2f *vertices)
     {
-        for(int i =0; i<4; i++)
-        {
-            vertices[i] = shape.getPoint(i);
-        }
+        vertices[0].x = Position.x - (rsize.x)/2 - deltax;
+        vertices[0].y = Position.y + rsize.y/2;
+
+        vertices[1].x = Position.x + (rsize.x)/2;
+        vertices[1].y = Position.y + (rsize.y)/2;
+
+        vertices[2].x = Position.x + (rsize.x)/2 + deltax;
+        vertices[2].y = Position.y - rsize.y/2;
+
+        vertices[3].x = Position.x - (rsize.x)/2;
+        vertices[3].y = Position.y - (rsize.y)/2;
     }
 
     bool checkPoint(sf::Vector2f point, int n_vertices=4) //n_vertices == number of vertices
@@ -765,46 +776,9 @@ public:
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) isProcess=true;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) isInputOutput=true;
 
-        pointChecker();
     }
 
-    void pointChecker(){
-        float px=cursorX();
-        float py=cursorY();
-        sf::Vector2f coord = sf::Vector2f(px,py);
-        for(int count=0;count<process.size();count++){
-           if(process[count].checkPoint(coord)==true){
-                string stringy=to_string((int)px)+" "+to_string(count);
-                  debugger.setString("process "+stringy);
 
-            }
-
-        }
-
-        for(int count=0;count<decision.size();count++){
-           if(decision[count].checkPoint(coord)==true){
-                string stringy=to_string((int)px)+" "+to_string(count);
-                debugger.setString("Decision "+stringy);
-
-            }
-        }
-        for(int count=0;count<terminator.size();count++){
-            if(terminator[count].checkPoint(coord)==true){
-                string stringy=to_string((int)px)+" "+to_string(count);
-                debugger.setString("term "+stringy);
-
-            }
-        }
-
-        for(int count=0;count<inputOutput.size();count++){
-            if(inputOutput[count].checkPoint(coord)==true){
-                string stringy=to_string((int)px)+" "+to_string(count);
-                debugger.setString("input "+stringy);
-
-            }
-        }
-
-    }
 
     void resetAll(){
         isProcess=false;
@@ -903,6 +877,7 @@ public:
 
     }
 
+
     void setVectorField(){
             if(isProcess==true){
          //       rocess.resize(process.size()+1);
@@ -933,28 +908,51 @@ public:
 
     }
 
+
     void drawAll(){
+        float px=cursorX();
+        float py=cursorY();
+        sf::Vector2f coord = sf::Vector2f(px,py);
 
         for(int count=0;count<process.size();count++){
             process[count].setColor(sf::Color::Black);
             window->draw(process[count]);
+            if(process[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                  debugger.setString("process "+stringy);
+            }
           //  exit(0);
         }
 //
         for(int count=0;count<decision.size();count++){
             decision[count].setColor(sf::Color::Black);
             window->draw(decision[count]);
+            if(decision[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                debugger.setString("Decision "+stringy);
+
+            }
   //          exit(0);
         }
         for(int count=0;count<terminator.size();count++){
             terminator[count].setColor(sf::Color::Black);
             window->draw(terminator[count]);
+            if(terminator[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                debugger.setString("term "+stringy);
+
+            }
           //  exit(0);
         }
 
         for(int count=0;count<inputOutput.size();count++){
             inputOutput[count].setColor(sf::Color::Black);
             window->draw(inputOutput[count]);
+            if(inputOutput[count].checkPoint(coord)==true){
+                string stringy=to_string((int)px)+" "+to_string(count);
+                debugger.setString("input "+stringy);
+
+            }
           //  exit(0);
         }
 
