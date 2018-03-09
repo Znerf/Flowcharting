@@ -128,13 +128,13 @@ public:
        // void sf::Transformable::setOrigin	(	const Vector2f & 	origin	)
 
         //cout << "rect: " << r.getSize().x << " , " << r.getSize().y << endl;
-        r.setSize(sf::Vector2f(150, 50)); //hve to update on  setstring
-        setOrigin();
-        cout << "rect: before: " << r.getGlobalBounds().width << " , " << r.getGlobalBounds().height << endl;
-        r.setScale(Scale);
-        //cout << "rect: " << r.getSize().x << " , " << r.getSize().y << endl;
-        //r.setOrigin(r.getGlobalBounds().width/2, r.getGlobalBounds().height/2);
-        cout << "rect: aftr: " << r.getGlobalBounds().width << " , " << r.getGlobalBounds().height << endl;
+//        r.setSize(sf::Vector2f(150, 50)); //hve to update on  setstring
+//        setOrigin();
+//        cout << "rect: before: " << r.getGlobalBounds().width << " , " << r.getGlobalBounds().height << endl;
+//        r.setScale(Scale);
+//        //cout << "rect: " << r.getSize().x << " , " << r.getSize().y << endl;
+//        //r.setOrigin(r.getGlobalBounds().width/2, r.getGlobalBounds().height/2);
+//        cout << "rect: aftr: " << r.getGlobalBounds().width << " , " << r.getGlobalBounds().height << endl;
         r.setPosition(Position);               //mouse
         r.setOutlineThickness(4/(Scale.x+Scale.y));
         r.setOutlineColor(text_outline_color);    //depends on selection state
@@ -738,7 +738,9 @@ class Run{
     vector<Terminator> terminator;
     vector<Decision> decision;
     vector<InputOutput> inputOutput;
+
     enum shape{DECISION,TERMINATOR,INPUTOUTPUT,PROCESS,NONE};
+
     int pro=-1,ter=-1,dec=-1,inp=-1;
 
     shape clickClass=NONE;
@@ -758,6 +760,8 @@ class Run{
     string st;
 
     bool isDecision=false,isProcess=false,isTerminator=false,isInputOutput=false;
+
+    bool isChangeMode=false;
    // Decision shape3;
     int a=0;
 
@@ -767,9 +771,18 @@ public:
     Run(sf::RenderWindow* windo){
         window= windo;
 
+       debugger.setPosition(sf::Vector2f(50,200));
+       debugger.setString("Place shape in screen");
 
-        debugger.setPosition(sf::Vector2f(50,200));
-        debugger.setString("Place shape in screen");
+       temVectorReset();
+    }
+
+    void temVectorReset(){
+        temProcess.setString("Place shape in screen");
+        temDecision.setString("Place shape in screen");
+        temInputOutput.setString("Place shape in screen");
+        temTerminator.setString("Place shape in screen");
+
     }
 
     void resetAll(){
@@ -800,33 +813,32 @@ public:
 
         if(isProcess==true){
                 temProcess.setPosition(sf::Vector2f(Mx,My));
-                temProcess.setString("Place shape in screen");
+                //temProcess.setString("Place shape in screen");
                 temProcess.setColor(sf::Color(0,255,255));
                 window->draw(temProcess);
 
             }
             else if(isTerminator==true){
                 temTerminator.setPosition(sf::Vector2f(Mx,My));
-                temTerminator.setString("Place shape in screen");
+                //temTerminator.setString("Place shape in screen");
                 temTerminator.setColor(sf::Color(0,255,255));
                 window->draw(temTerminator);
 
             }
             else if(isDecision==true){
                 temDecision.setPosition(sf::Vector2f(Mx,My));
-                temDecision.setString("Place shape in screen");
+               // temDecision.setString("Place shape in screen");
                 temDecision.setColor(sf::Color(0,255,255));
                 window->draw(temDecision);
 
             }
             else if(isInputOutput==true){
                 temInputOutput.setPosition(sf::Vector2f(Mx,My));
-                temInputOutput.setString("Place shape in screen");
+              //  temInputOutput.setString("Place shape in screen");
                 temInputOutput.setColor(sf::Color(0,255,255));
                 window->draw(temInputOutput);
 
             }
-
 
     }
 
@@ -839,6 +851,9 @@ public:
 
         }
 
+        handleMouse();
+
+
         //keyboard hndling
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) (*window).close();
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) isDecision=true;
@@ -846,7 +861,8 @@ public:
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) isProcess=true;
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) isInputOutput=true;
 
-        handleMouse();
+
+
 
     }
 
@@ -856,14 +872,17 @@ public:
         if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
             while(sf::Mouse::isButtonPressed(sf::Mouse::Left));
-
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::C)){
+                isChangeMode=true;
+            }
             if(dec>-1){
-                decision[dec].setColor(sf::Color::COLORCLICK);
+
                 if(clickClass ==NONE ){
+                    decision[dec].setColor(sf::Color::COLORCLICK);
                     clicknumber=dec;
                     clickClass=DECISION;
 
-                }else if(clickClass==DECISION){
+                }else if(clickClass==DECISION && clicknumber==dec){
                     TextWindow edit;
                     string str =edit.run();
                     decision[dec].setString(str);
@@ -872,12 +891,12 @@ public:
                 };
 
             }else if(ter>-1){
-                terminator[ter].setColor(sf::Color::COLORCLICK);
                 if(clickClass ==NONE ){
+                    terminator[ter].setColor(sf::Color::COLORCLICK);
                     clicknumber=ter;
                     clickClass=TERMINATOR;
 
-                }else if(clickClass==TERMINATOR){
+                }else if(clickClass==TERMINATOR && clicknumber==ter){
                     TextWindow edit;
                     string str =edit.run();
                     terminator[ter].setString(str);
@@ -886,12 +905,13 @@ public:
                 };
 
             }else if(inp>-1){
-                inputOutput[inp].setColor(sf::Color::COLORCLICK);
                 if(clickClass ==NONE ){
+
+                    inputOutput[inp].setColor(sf::Color::COLORCLICK);
                     clicknumber=inp;
                     clickClass=INPUTOUTPUT;
 
-                }else if(clickClass==INPUTOUTPUT){
+                }else if(clickClass==INPUTOUTPUT && clicknumber==inp){
                     TextWindow edit;
                     string str =edit.run();
                     inputOutput[inp].setString(str);
@@ -899,12 +919,13 @@ public:
                     setColorBlack();
                 };
             }else if(pro>-1){
-                process[pro].setColor(sf::Color::COLORCLICK);
+
                 if(clickClass ==NONE ){
+                    process[pro].setColor(sf::Color::COLORCLICK);
                     clicknumber=pro;
                     clickClass=PROCESS;
 
-                }else if(clickClass==PROCESS){
+                }else if(clickClass==PROCESS && clicknumber==pro){
                     TextWindow edit;
                     string str =edit.run();
                     process[pro].setString(str);
@@ -921,7 +942,42 @@ public:
 
         }
 
+    }
 
+
+    void mouseRight(){
+        if(clickClass!=NONE){
+             if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
+            {
+
+                while(sf::Mouse::isButtonPressed(sf::Mouse::Right));
+
+                if(dec>-1){
+                    clickClass = NONE;
+                    decision.erase (decision.begin()+clicknumber);
+
+
+//                    setColorBlack();
+
+                }else if(ter>-1){
+                    terminator.erase (terminator.begin()+clicknumber);
+                    clickClass = NONE;
+  //                  setColorBlack();
+                }else if(inp>-1){
+                    inputOutput.erase (inputOutput.begin()+clicknumber);
+                    clickClass = NONE;
+    //                setColorBlack();
+
+                }else if(pro>-1){
+                    process.erase (process.begin()+clicknumber);
+                    clickClass = NONE;
+      //              setColorBlack();
+
+                }
+
+
+            }
+    }
     }
 
     void setColorBlack(){
@@ -956,7 +1012,7 @@ public:
     void logic(){
         eventHandle();
 
-        detectobj();
+
 
         clear();
         if(isDecision==true|| isTerminator==true || isProcess==true|| isInputOutput==true){
@@ -983,6 +1039,9 @@ public:
       //  cout<<(int)process.size();
         window->draw(debugger);
         drawAll();
+        detectobj();
+        mouseRight();
+
 
     }
 
@@ -1015,7 +1074,7 @@ public:
                 inputOutput.push_back(temInputOutput);
 
             }
-
+            temVectorReset();
 
 
     }
@@ -1032,6 +1091,7 @@ public:
                 string stringy=to_string((int)px)+" "+to_string(count);
                 debugger.setString("process "+stringy);
                 pro=count;
+          //      clicknumber=pro;
                 break;
             }else pro=-1;
           //  exit(0);
@@ -1042,6 +1102,7 @@ public:
                 string stringy=to_string((int)px)+" "+to_string(count);
                 debugger.setString("Decision "+stringy);
                 dec=count;
+            //    clicknumber=dec;
                 break;
             }else dec=-1;
   //          exit(0);
@@ -1051,6 +1112,7 @@ public:
                 string stringy=to_string((int)px)+" "+to_string(count);
                 debugger.setString("term "+stringy);
                 ter=count;
+              //  clicknumber=ter;
                 break;
             }else ter=-1;
         }
@@ -1061,6 +1123,7 @@ public:
                 string stringy=to_string((int)px)+" "+to_string(count);
                 debugger.setString("input "+stringy);
                 inp=count;
+               // clicknumber=inp;
                 break;
             }else inp=-1;
           //  exit(0);
@@ -1092,6 +1155,7 @@ public:
 
         for(int count=0;count<inputOutput.size();count++){
             //inputOutput[count].setColor(sf::Color::Black);
+
             window->draw(inputOutput[count]);
           //  exit(0);
         }
