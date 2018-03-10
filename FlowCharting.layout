@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
+	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="23384" topLine="593" />
+		</Cursor>
+		<Folding>
+			<Collapse line="14" />
+			<Collapse line="55" />
+			<Collapse line="98" />
+		</Folding>
+	</File>
 	<File name="sfml.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="110" topLine="0" />
@@ -15,24 +25,5 @@
 		<Cursor>
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
-	</File>
-	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="34998" topLine="657" />
-		</Cursor>
-		<Folding>
-			<Collapse line="13" />
-			<Collapse line="54" />
-			<Collapse line="97" />
-			<Collapse line="254" />
-			<Collapse line="363" />
-			<Collapse line="787" />
-			<Collapse line="794" />
-			<Collapse line="800" />
-			<Collapse line="803" />
-			<Collapse line="1140" />
-			<Collapse line="1192" />
-			<Collapse line="1227" />
-		</Folding>
 	</File>
 </CodeBlocks_layout_file>

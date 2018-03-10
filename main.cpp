@@ -6,6 +6,7 @@
 #include<vector>
 
 #define COLORCLICK Red
+#define PI 3.141592653589793238
 
 using namespace std;
 
@@ -116,6 +117,9 @@ private:
         text.setOrigin(text.getGlobalBounds().width/2, text.getGlobalBounds().height/2+5*Scale.y);
     }
 public:
+    sf::Vector2f getPosition(){
+        return Position;
+    }
 
     sf::RectangleShape r;
 
@@ -311,6 +315,9 @@ public:
 
     }
 
+    sf::Vector2f getPosition(){
+        return Position;
+    }
     void setString(const sf::String &s)
     {
         str = s;
@@ -421,6 +428,10 @@ public:
         // set the text style
         //text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 
+    }
+
+    sf::Vector2f getPosition(){
+        return Position;
     }
 
     void setString(const sf::String &s)
@@ -580,6 +591,9 @@ public:
 
     }
 
+    sf::Vector2f getPosition(){
+        return Position;
+    }
     void setString(const sf::String &s)
     {
         str = s;
@@ -746,6 +760,124 @@ public:
 
 
 
+class sfLine : public sf::Drawable
+{
+public:
+    sfLine():
+        color(sf::Color::Black), thickness(2.f)
+    {
+
+    }
+
+    void Init_(const sf::Vector2f& point1, const sf::Vector2f& point2)
+    {
+        sf::Vector2f direction = point2 - point1;
+        sf::Vector2f unitDirection = direction/std::sqrt(direction.x*direction.x+direction.y*direction.y);
+        sf::Vector2f unitPerpendicular(-unitDirection.y,unitDirection.x);
+
+        sf::Vector2f offset = (thickness/2.f)*unitPerpendicular;
+
+        vertices[0].position = point1 + offset;
+        vertices[1].position = point2 + offset;
+        vertices[2].position = point2 - offset;
+        vertices[3].position = point1 - offset;
+
+        for (int i=0; i<4; ++i)
+            vertices[i].color = color;
+    }
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const
+    {
+        target.draw(vertices,4,sf::Quads);
+    }
+
+private:
+    sf::Vertex vertices[4];
+    float thickness;
+    sf::Color color;
+};
+
+class Arrow : public sf::Drawable
+{
+private:
+    vector <sf::Vector2f> Points;
+    sf::Color outline_color = sf::Color::Black;
+    float thickness = 2.f;
+    int tri_radius = 7;
+
+    vector <sfLine> lines;
+    sf::CircleShape triangle;
+
+
+    void setOrigin()
+    {
+        triangle.setOrigin(triangle.getRadius(), triangle.getRadius());
+    }
+
+    float find_rotation(sf::Vector2f pointA, sf::Vector2f pointB)
+    {
+        float delx = pointB.x - pointA.x;
+        float dely = pointB.y - pointA.y;
+        float angle = atan(dely/delx) *180/PI;
+
+        if((delx >= 0 && dely >= 0) || (delx >= 0 && dely <= 0))
+        {
+            angle += 90;
+        }
+        else
+        {
+            angle -= 90;
+        }
+
+        return angle;
+
+    }
+
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const
+    {
+        for(int i =0; i < lines.size(); i++)
+        {
+            target.draw(lines[i]);
+        }
+
+        target.draw(triangle);
+    }
+
+public:
+    void setArrow(const vector <sf::Vector2f> &points)
+    {
+        Points = points;
+
+        triangle.setRadius(tri_radius);
+        triangle.setPointCount(3);
+        triangle.setFillColor(outline_color);
+        setOrigin();
+
+        for(int i = 0; i< (Points.size() - 1); i++)
+        {
+            sfLine line;
+            line.Init_(Points[i], Points[i+1]);
+            lines.push_back(line);
+
+        }
+
+
+        //after drawing the lines
+
+        sf::Vector2f midPoint;
+        midPoint.x = (Points[Points.size() - 1].x + Points[Points.size() - 2].x)/2.0;
+        midPoint.y = (Points[Points.size() - 1].y + Points[Points.size() - 2].y)/2.0;
+
+        triangle.setPosition(midPoint);
+
+
+        float angle = find_rotation(Points[Points.size() - 2], Points[Points.size() - 1]);
+        triangle.rotate(angle);
+
+    }
+
+
+
+};
 class Run{
     vector<Process> process;
     vector<Terminator> terminator;
@@ -774,9 +906,18 @@ class Run{
 
     bool isDecision=false,isProcess=false,isTerminator=false,isInputOutput=false;
 
-    bool isChangeMode=false;
+    bool isChangeMode=false,isArrow=false;
    // Decision shape3;
     int a=0;
+
+    vector<sf::Vector2f> arrowX;
+    //shape shapeTem[1];
+    //int shapeNumber[1];
+    Arrow temArrow;
+    Arrow sha;
+    vector<Arrow> arrow;
+
+
 
 
 
@@ -784,8 +925,8 @@ public:
     Run(sf::RenderWindow* windo){
         window= windo;
 
-       debugger.setPosition(sf::Vector2f(50,200));
-       debugger.setString("Place shape in screen");
+       debugger.setPosition(sf::Vector2f(60,590));
+       debugger.setString("");
 
        temVectorReset();
     }
@@ -824,6 +965,9 @@ public:
         float Mx = cursorX();
         float My = cursorY();
 
+        if(isArrow){
+      //      temArrow())
+        }
         if(isProcess==true){
                 temProcess.setPosition(sf::Vector2f(Mx,My));
                 //temProcess.setString("Place shape in screen");
@@ -885,6 +1029,31 @@ public:
             isInputOutput=true;
             resetClickClass();
         }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+            while(sf::Keyboard::isKeyPressed(sf::Keyboard::A));
+            if(clickClass!=NONE){
+                switch(clickClass){
+                    case DECISION:
+                        arrowX.push_back(decision[clicknumber].getPosition());
+                        cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                        break;
+                    case TERMINATOR:
+                        arrowX.push_back(terminator[clicknumber].getPosition());
+                        cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                        break;
+                    case PROCESS:
+                        arrowX.push_back(process[clicknumber].getPosition());
+                        cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                        break;
+                    case INPUTOUTPUT:
+                        arrowX.push_back(inputOutput[clicknumber].getPosition());
+                        cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+
+                }
+
+                isArrow=true;
+            }
+        }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)){
             if(clickClass!=NONE) {
                 isChangeMode=true;
@@ -925,12 +1094,59 @@ public:
         {
             while(sf::Mouse::isButtonPressed(sf::Mouse::Left));
 
-            if(dec>-1){
+            if(isArrow == true){
+                    //asdfsajdfasjdfhkhdf
+
+                if(dec>-1){
+                    arrowX.push_back(decision[dec].getPosition());
+                    isArrow=false;
+                    sha.setArrow(arrowX);
+                    arrow.push_back(sha);
+                    arrowX.clear();
+                    cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+
+                }else if(ter>-1){
+
+                    arrowX.push_back(terminator[ter].getPosition());
+
+                    cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+
+                    sha.setArrow(arrowX);
+                    arrowX.clear();
+                    arrow.push_back(sha);
+                    isArrow=false;
+                }
+                else if(inp>-1){
+                    arrowX.push_back(inputOutput[inp].getPosition());
+
+                    sha.setArrow(arrowX);
+                    arrow.push_back(sha);
+                    arrowX.clear();
+
+                    cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                    isArrow=false;
+                }else if(pro>-1){
+
+                    arrowX.push_back(process[pro].getPosition());
+
+                    sha.setArrow(arrowX);
+                    arrow.push_back(sha);
+                    cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                    sha.setArrow(arrowX);
+
+                    isArrow=false;
+                }
+                else{
+                    arrowX.push_back(sf::Vector2f(cursorX(),cursorY()));
+                    cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                }
+                //  isArrow=false;
+            } else if(dec>-1){
 
                 if(clickClass ==NONE ){
-                    decision[dec].setColor(sf::Color::COLORCLICK);
-                    clicknumber=dec;
-                    clickClass=DECISION;
+                        decision[dec].setColor(sf::Color::COLORCLICK);
+                        clicknumber=dec;
+                        clickClass=DECISION;
 
                 }else if(clickClass==DECISION && clicknumber==dec){
                     TextWindow edit;
@@ -938,7 +1154,8 @@ public:
                     decision[dec].setString(str);
                     clickClass=NONE;
                     setColorBlack();
-                };
+                }
+
 
             }else if(ter>-1){
                 if(clickClass ==NONE ){
@@ -987,9 +1204,11 @@ public:
                     setColorBlack();
                 };
             }else{
-                clickClass=NONE;
+                if(isArrow!=true){
+                    clickClass=NONE;
       //          clicked = "a";
-                setColorBlack();
+                    setColorBlack();
+                }
             }
 
 
@@ -1031,7 +1250,7 @@ public:
 
 
             }
-    }
+        }
     }
 
     void setColorBlack(){
@@ -1096,6 +1315,10 @@ public:
 
       //  cout<<(int)process.size();
         window->draw(debugger);
+        if(arrowX.size()>1){
+            sha.setArrow(arrowX);
+            (*window).draw(sha);
+        }
         drawAll();
         detectobj();
         mouseRight();
@@ -1225,7 +1448,9 @@ public:
     }
     void drawAll(){
 
-
+        for(int count=0;count<arrow.size();count++){
+            window->draw(arrow[count]);
+        }
 
         for(int count=0;count<process.size();count++){
            // process[count].setColor(sf::Color::Black);
@@ -1269,8 +1494,5 @@ int main()
         window.display();
     }
 
-
-    int pause;
-    cin>>pause;
     return 0;
 }
