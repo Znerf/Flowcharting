@@ -841,7 +841,7 @@ private:
 
         target.draw(triangle);
     }
-    int drawOnce=0;
+
 public:
     void setArrow(const vector <sf::Vector2f> &points)
     {
@@ -874,7 +874,29 @@ public:
              angle = find_rotation(Points[Points.size() - 2], Points[Points.size() - 1]);
 
              triangle.rotate(angle);
-        drawOnce++;
+
+
+    }
+
+    void setLine(const vector <sf::Vector2f> &points)
+    {
+
+        Points = points;
+
+        triangle.setRadius(tri_radius);
+        triangle.setPointCount(3);
+        triangle.setFillColor(outline_color);
+        setOrigin();
+
+        for(int i = 0; i< (Points.size() - 1); i++)
+        {
+            sfLine line;
+            line.Init_(Points[i], Points[i+1]);
+            lines.push_back(line);
+
+        }
+
+
 
     }
 
@@ -1332,6 +1354,10 @@ public:
         }
 
       //  cout<<(int)process.size();
+        if(arrowX.size()>1){
+                sha.setLine(arrowX);
+                (*window).draw(sha);
+        }
         window->draw(debugger);
 
         drawAll();
