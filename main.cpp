@@ -817,7 +817,7 @@ private:
     {
         float delx = pointB.x - pointA.x;
         float dely = pointB.y - pointA.y;
-        float angle = atan(dely/delx) *180/PI;
+        float angle = atan(dely/delx) *(float)180/PI;
 
         if((delx >= 0 && dely >= 0) || (delx >= 0 && dely <= 0))
         {
@@ -841,10 +841,11 @@ private:
 
         target.draw(triangle);
     }
-
+    int drawOnce=0;
 public:
     void setArrow(const vector <sf::Vector2f> &points)
     {
+
         Points = points;
 
         triangle.setRadius(tri_radius);
@@ -864,14 +865,16 @@ public:
         //after drawing the lines
 
         sf::Vector2f midPoint;
-        midPoint.x = (Points[Points.size() - 1].x + Points[Points.size() - 2].x)/2.0;
-        midPoint.y = (Points[Points.size() - 1].y + Points[Points.size() - 2].y)/2.0;
+        midPoint.x = (Points[Points.size() - 1].x + Points[Points.size() - 2].x)/2.00000000;
+        midPoint.y = (Points[Points.size() - 1].y + Points[Points.size() - 2].y)/2.00000000;
 
         triangle.setPosition(midPoint);
+        float angle;
 
+             angle = find_rotation(Points[Points.size() - 2], Points[Points.size() - 1]);
 
-        float angle = find_rotation(Points[Points.size() - 2], Points[Points.size() - 1]);
-        triangle.rotate(angle);
+             triangle.rotate(angle);
+        drawOnce++;
 
     }
 
@@ -1104,6 +1107,10 @@ public:
                     arrow.push_back(sha);
                     arrowX.clear();
                     cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                     if(arrowX.size()>1){
+                        sha.setArrow(arrowX);
+                        (*window).draw(sha);
+                    }
 
                 }else if(ter>-1){
 
@@ -1114,6 +1121,10 @@ public:
                     sha.setArrow(arrowX);
                     arrowX.clear();
                     arrow.push_back(sha);
+                     if(arrowX.size()>1){
+                        sha.setArrow(arrowX);
+                        (*window).draw(sha);
+                    }
                     isArrow=false;
                 }
                 else if(inp>-1){
@@ -1124,6 +1135,10 @@ public:
                     arrowX.clear();
 
                     cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
+                     if(arrowX.size()>1){
+                        sha.setArrow(arrowX);
+                        (*window).draw(sha);
+                    }
                     isArrow=false;
                 }else if(pro>-1){
 
@@ -1133,7 +1148,10 @@ public:
                     arrow.push_back(sha);
                     cout<<arrowX.back().x<<" "<<arrowX.back().y<<endl;
                     sha.setArrow(arrowX);
-
+                    if(arrowX.size()>1){
+                        sha.setArrow(arrowX);
+                        (*window).draw(sha);
+                    }
                     isArrow=false;
                 }
                 else{
@@ -1315,10 +1333,7 @@ public:
 
       //  cout<<(int)process.size();
         window->draw(debugger);
-        if(arrowX.size()>1){
-            sha.setArrow(arrowX);
-            (*window).draw(sha);
-        }
+
         drawAll();
         detectobj();
         mouseRight();
