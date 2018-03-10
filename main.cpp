@@ -247,6 +247,9 @@ public:
         return true;
 
     }
+    Process clone(){
+        return(*this);
+    }
 
 };
 
@@ -355,6 +358,9 @@ public:
             return true;
         else
             return false;
+    }
+    Terminator clone(){
+        return(*this);
     }
 
 };
@@ -495,6 +501,10 @@ public:
 
         return true;
 
+    }
+
+    Decision clone(){
+        return(*this);
     }
 };
 
@@ -652,6 +662,9 @@ public:
         return true;
 
     }
+    InputOutput clone(){
+        return(*this);
+    }
 };
 
 class TextWindow{
@@ -664,9 +677,9 @@ class TextWindow{
 
 public:
 
-    string run(){
+    string run(string name){
         sf::VideoMode VBMode(300, 300, 32);
-        sf::RenderWindow inputField(VBMode, "Input");
+        sf::RenderWindow inputField(VBMode, name);
 
     //event handling
         while (inputField.isOpen())
@@ -856,25 +869,62 @@ public:
 
         //keyboard hndling
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) (*window).close();
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) isDecision=true;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::T)) isTerminator=true;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) isProcess=true;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) isInputOutput=true;
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            resetClickClass();
+            isDecision=true;
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::T)) {
+            isTerminator=true;
+            resetClickClass();
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+            resetClickClass();
+            isProcess=true;
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) {
+            isInputOutput=true;
+            resetClickClass();
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)){
+            if(clickClass!=NONE) {
+                isChangeMode=true;
 
+                switch(clickClass){
+                    case DECISION:
+                        temDecision=decision[clicknumber].clone();
+                        isDecision=true;
+                        break;
+                    case TERMINATOR:
+                        temTerminator=terminator[clicknumber].clone();
+                        isTerminator=true;
+                        break;
+                    case PROCESS:
+                        temProcess=process[clicknumber].clone();
+                        isProcess=true;
+                        break;
+                    case INPUTOUTPUT:
+                        temInputOutput=inputOutput[clicknumber].clone();
+                        isInputOutput=true;
+                        break;
+
+                }
+            }
+        }
 
 
 
     }
-
+    void resetClickClass(){
+        clickClass=NONE;
+        setColorBlack();
+    }
 
     void handleMouse(){
 
         if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
             while(sf::Mouse::isButtonPressed(sf::Mouse::Left));
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::C)){
-                isChangeMode=true;
-            }
+
             if(dec>-1){
 
                 if(clickClass ==NONE ){
@@ -884,7 +934,7 @@ public:
 
                 }else if(clickClass==DECISION && clicknumber==dec){
                     TextWindow edit;
-                    string str =edit.run();
+                    string str =edit.run("Decision rename");
                     decision[dec].setString(str);
                     clickClass=NONE;
                     setColorBlack();
@@ -898,7 +948,7 @@ public:
 
                 }else if(clickClass==TERMINATOR && clicknumber==ter){
                     TextWindow edit;
-                    string str =edit.run();
+                    string str =edit.run("terminator rename");
                     terminator[ter].setString(str);
                     clickClass=NONE;
                     setColorBlack();
@@ -913,7 +963,7 @@ public:
 
                 }else if(clickClass==INPUTOUTPUT && clicknumber==inp){
                     TextWindow edit;
-                    string str =edit.run();
+                    string str =edit.run("input rename");
                     inputOutput[inp].setString(str);
                     clickClass=NONE;
                     setColorBlack();
@@ -927,8 +977,12 @@ public:
 
                 }else if(clickClass==PROCESS && clicknumber==pro){
                     TextWindow edit;
-                    string str =edit.run();
+                    string str =edit.run("process rename");
+                 //   str+="hi";
                     process[pro].setString(str);
+
+
+
                     clickClass=NONE;
                     setColorBlack();
                 };
@@ -1025,10 +1079,14 @@ public:
             if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
 
-                TextWindow textWindow;
-                st=textWindow.run();
-                a=0; // shuldnot hover pointer now
+                if(isChangeMode==false){
+                    TextWindow textWindow;
+                    st=textWindow.run("Input");
+                    //st+="try";
 
+                }
+                a=0; // shuldnot hover pointer now
+                eventHandle();
                 setVectorField();
                 //isAny=false;
                 resetAll();
@@ -1049,31 +1107,62 @@ public:
     void setVectorField(){
             if(isProcess==true){
          //       rocess.resize(process.size()+1);
-                temProcess.setString(st);
-                temProcess.setColor(sf::Color::Black);
-                process.push_back(temProcess);
 
+
+                temProcess.setColor(sf::Color::Black);
+                if(isChangeMode==true){
+
+                    process[clicknumber]=(temProcess).clone();
+                    isChangeMode=false;
+                }else {
+                    temProcess.setString(st);
+                    process.push_back(temProcess);
+                }
             }
             else if(isTerminator==true){
          //       rocess.resize(process.size()+1);
-                temTerminator.setString(st);
+
                 temTerminator.setColor(sf::Color::Black);
-                terminator.push_back(temTerminator);
+                if(isChangeMode==true){
+                    terminator[clicknumber]=temTerminator.clone();
+                    isChangeMode=false;
+                }else{
+
+                        temTerminator.setString(st);
+                        terminator.push_back(temTerminator);
+
+                }
 
             }
             else if(isDecision==true){
          //       rocess.resize(process.size()+1);
-                temDecision.setString(st);
+
                 temDecision.setColor(sf::Color::Black);
-                decision.push_back(temDecision);
+                if(isChangeMode==true){
+                    decision[clicknumber]=temDecision.clone();
+                    isChangeMode=false;
+                }else {
+
+                    temDecision.setString(st);
+                    decision.push_back(temDecision);
+
+                }
 
             }else if(isInputOutput==true){
          //       rocess.resize(process.size()+1);
-                temInputOutput.setString(st);
                 temInputOutput.setColor(sf::Color::Black);
-                inputOutput.push_back(temInputOutput);
+
+                if(isChangeMode==true){
+                    inputOutput[clicknumber]=temInputOutput.clone();
+                    isChangeMode=false;
+                }else{
+                    temInputOutput.setString(st);
+                    inputOutput.push_back(temInputOutput);
+
+                }
 
             }
+
             temVectorReset();
 
 
