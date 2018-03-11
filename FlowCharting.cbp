@@ -33,9 +33,10 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="main.cpp" />
-		<Unit filename="menu.h" />
-		<Unit filename="sfml.h" />
+		<Unit filename="shape.cpp" />
 		<Unit filename="shape.h" />
+		<Unit filename="text.cpp" />
+		<Unit filename="text.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

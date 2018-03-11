@@ -16,12 +16,15 @@
 	<SFML/Graphics.hpp>
 	<sstream>
 
-1520689797 source:/home/sushil/sagar/cpp/Flowcharting/main.cpp
+1520733865 source:/home/sushil/sagar/cpp/Flowcharting/main.cpp
 	<iostream>
+	<SFML/Graphics.hpp>
+	<sstream>
 	<cmath>
 	<cstring>
-	<SFML/Graphics.hpp>
 	<vector>
+	"shape.h"
+	"text.h"
 
 1520238802 /home/sushil/sagar/cpp/Flowcharting/sfml.h
 	<SFML/Graphics.hpp>
@@ -43,11 +46,31 @@
 1520261827 /home/sushil/sagar/cpp/Flowcharting/menu.cpp
 	<iostream>
 
-1520255177 source:/home/sushil/sagar/cpp/Flowcharting/shape.cpp
+1520730966 source:/home/sushil/sagar/cpp/Flowcharting/shape.cpp
+	<iostream>
+	<SFML/Graphics.hpp>
 
 1520339887 source:/home/sushil/sagar/cpp/Flowcharting (copy)/main.cpp
 	<iostream>
 	<cmath>
 	<sstream>
+	<SFML/Graphics.hpp>
+
+1520732800 /home/sushil/sagar/cpp/Flowcharting/shape.h
+	"shape.cpp"
+
+1520730966 /home/sushil/sagar/cpp/Flowcharting/shape.cpp
+	<iostream>
+	<SFML/Graphics.hpp>
+
+1520730815 source:/home/sushil/sagar/cpp/Flowcharting/text.cpp
+	<iostream>
+	<SFML/Graphics.hpp>
+
+1520732800 /home/sushil/sagar/cpp/Flowcharting/text.h
+	"text.cpp"
+
+1520730815 /home/sushil/sagar/cpp/Flowcharting/text.cpp
+	<iostream>
 	<SFML/Graphics.hpp>
 
